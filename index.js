@@ -13,14 +13,19 @@ if (!window.T) {
 
 const TMapWind = window.T.Overlay.extend({
     // 构造函数时传递参数，对OverlayOptions属性值进行赋值。
-    initialize: function (data, options) {
+    initialize: function (data, options = {}) {
+        const opt = assign({}, options);
         this.map = null;
-        this.options = options;
+        this.options = opt;
         this.paneName = "overlayPane";
         this.context = "2d";
-        this.zIndex = 999999;
+        this.zIndex = this.options.zIndex;
         this.mixBlendMode = "normal";
         this.field = null;
+        // 是否禁用默认配置项，禁用后需要自行设置
+        this.isDisableAutoConfig = opt.isDisableAutoConfig;
+        // 自定义的canvas样式
+        this.customStyle = opt.customStyle;
 
         // 矢量图层
         this.canvas = null;
@@ -90,7 +95,7 @@ const TMapWind = window.T.Overlay.extend({
 
         this.pickWindOptions();
 
-        console.log("设置项目", this.options);
+        // console.log("设置项目", this.options);
 
         if (data) {
             this.setData(data, options.fieldOptions);
@@ -99,7 +104,10 @@ const TMapWind = window.T.Overlay.extend({
     onAdd: function (map) {
         this.map = map;
         const canvas = (this.canvas = document.createElement("canvas"));
-        canvas.style.cssText = `position:absolute; left:0; top:0; z-index: ${this.zIndex} ;user-select:none;`;
+        canvas.setAttribute("id", "_TmapWind");
+        canvas.style.cssText =
+            this.customStyle ||
+            `position:absolute; left:0; top:0; z-index: ${this.zIndex} ;user-select:none;`;
         canvas.style.mixBlendMode = this.mixBlendMode;
         this.adjustSize();
         map.getPanes()[this.paneName].appendChild(canvas);
@@ -110,7 +118,9 @@ const TMapWind = window.T.Overlay.extend({
 
     _render: function (canvas) {
         if (!this.getData() || !this.map) return this;
-        const opt = this.getOptimizeWindOptions();
+        const opt = this.isDisableAutoConfig
+            ? this.getWindOptions()
+            : this.getOptimizeWindOptions();
 
         if (canvas && !this.wind) {
             const data = this.getData();
@@ -153,9 +163,23 @@ const TMapWind = window.T.Overlay.extend({
 
         this.map.addEventListener("movestart", this.stop);
         this.map.addEventListener("moveend", this.startAndDraw);
+
+        this.map.addEventListener("zoomstart", this.stop);
+        this.map.addEventListener("zoomend", this.start);
+    },
+
+    unbindEvent: function () {
+        this.map.removeEventListener("resize", this.handleResize);
+
+        this.map.removeEventListener("movestart", this.stop);
+        this.map.removeEventListener("moveend", this.startAndDraw);
+
+        this.map.removeEventListener("zoomstart", this.stop);
+        this.map.removeEventListener("zoomend", this.start);
     },
 
     // 获取优化过后的配置项
+    // 插件内置配置项
     getOptimizeWindOptions: function () {
         const velocityScales = {
             0: 1 / 20,
@@ -179,13 +203,33 @@ const TMapWind = window.T.Overlay.extend({
             18: 0.000002,
         };
 
-        // 自动优化配置
+        const colorScale = [
+            "rgb(36,104, 180)",
+            "rgb(60,157, 194)",
+            "rgb(128,205,193 )",
+            "rgb(151,218,168 )",
+            "rgb(198,231,181)",
+            "rgb(238,247,217)",
+            "rgb(255,238,159)",
+            "rgb(252,217,125)",
+            "rgb(255,182,100)",
+            "rgb(252,150,75)",
+            "rgb(250,112,52)",
+            "rgb(245,64,32)",
+            "rgb(237,45,28)",
+            "rgb(220,24,32)",
+            "rgb(180,0,35)",
+        ];
+
         const beforeOptions = this.options.windOptions || {};
 
         const zoom = this.map.getZoom();
         const options = {
             velocityScale: velocityScales[zoom] || 1 / 200,
             paths: zoom >= 8 ? 3000 : 5000,
+            frameRate: 20,
+            colorScale: colorScale,
+            lineWidth: 2,
         };
 
         this.options = assign(this.options, {
@@ -197,28 +241,28 @@ const TMapWind = window.T.Overlay.extend({
         return this.options.windOptions || {};
     },
     onRemove: function () {
-        console.log("执行删除");
-        const parent = this.div.parentNode;
-        if (parent) {
-            parent.removeChild(this.div);
-            this.map = null;
-            this.div = null;
-        }
+        // console.log("执行删除");
+        this.unbindEvent();
+        const parent = this.canvas.parentNode;
+        parent.removeChild(this.canvas);
     },
     start: function () {
         if (this.wind) {
-            console.log("start");
+            // console.log("start");
             this.wind.start();
         }
     },
     stop: function () {
         if (this.wind) {
-            console.log("stop");
+            // console.log("stop");
             this.wind.stop();
         }
     },
+    getElement: function () {
+        return this.canvas;
+    },
     handleResize: function () {
-        console.log("可是区域变化");
+        // console.log("可视区域变化");
         this.adjustSize();
         this._draw();
     },
@@ -231,7 +275,7 @@ const TMapWind = window.T.Overlay.extend({
             console.error("Illegal data");
         }
 
-        console.log("查看数据是否赋值", this.field);
+        // console.log("查看数据是否赋值", this.field);
 
         // 第一次不会走这里
         if (this.map && this.canvas && this.field) {
@@ -274,7 +318,7 @@ const TMapWind = window.T.Overlay.extend({
      * 更新位置
      */
     update: function () {
-        console.log("chonghui");
+        // console.log("重新绘制");
         this._draw();
     },
 });
