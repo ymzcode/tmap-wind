@@ -1,7 +1,14 @@
 {
   "name": "tmap-wind",
-  "version": "1.0.1",
-  "description": "天地图4.0canvas风场插件",
+  "version": "1.0.2",
+  "description": "天地图4.0canvas风场可视化/风向图插件",
+  "keywords": [
+    "天地图风场",
+    "风场可视化",
+    "天地图",
+    "风向图",
+    "风场分布"
+  ],
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,5 +17,10 @@
   "license": "MIT",
   "dependencies": {
     "wind-core": "^1.1.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ymzcode/tmap-wind"
+  },
+  "homepage": "https://github.com/ymzcode/tmap-wind#readme"
 }
