@@ -14,7 +14,9 @@ npm install tmap-wind -S
 
 # 在线示例
 
+在线示例为vue2环境，如果地图加载不出来，说明配额用完了，不影响展示风场
 
+[![Edit tmap-wind-demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/tmap-wind-demo-556o88?autoresize=1&fontsize=14&hidenavigation=1&theme=dark)
 
 # 使用教程
 
@@ -149,3 +151,11 @@ pdefinedOverlay.show()
 # 鸣谢
 
 https://github.com/sakitam-fdd/wind-layer
+
+# 其他
+
+博客：[随机的布尔值](https://bingyishow.top/)
+
+# 赞助
+
+[赞助一杯咖啡](https://bingyishow.top/11.html)
