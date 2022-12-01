@@ -1,0 +1,11 @@
+{
+  "name": "tmap-wind",
+  "version": "1.0.1",
+  "description": "天地图4.0canvas风场插件",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "RandomBoolean <bingyishow.top>",
+  "license": "MIT"
+}
