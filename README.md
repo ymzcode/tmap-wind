@@ -145,3 +145,7 @@ pdefinedOverlay.show()
 | `paths`                            | 生成的粒子路径数量                                       | `number|function`          | `800`, 当为回调函数时，参数`function(m:对应点风速值) => number` |
 | `particleMultiplier`               | 粒子路径数量的系数，不推荐使用（视野宽度 * 高度 * 系数） | `number`                   | `1 / 300`                                                    |
 | `frameRate`                        | 帧率（ms）                                               | `number`                   | `20`                                                         |
+
+# 鸣谢
+
+https://github.com/sakitam-fdd/wind-layer
